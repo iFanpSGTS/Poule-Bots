@@ -1,0 +1,156 @@
+"""
+This code is underdevelopment
+this thing is working, but need some fixing on the play song command
+overall this code working, but gonna change soon
+"""
+
+# import discord, asyncio
+# from discord.ext import commands
+# import yt_dlp
+
+# class Voice(commands.Cog):
+#     def __init__(self, bot, radio_url):
+#         self.bot = bot
+#         self.voice_channels = {}
+
+#     @commands.command(name="join")
+#     async def join_voice_channel(self, ctx):
+#         if ctx.author.voice is None:
+#             await ctx.send("You are not connected to a voice channel.")
+#             return
+
+#         voice_state = ctx.author.voice
+#         channel = voice_state.channel
+
+#         if channel.id in self.voice_channels:
+#             voice_client = self.voice_channels[channel.id]
+#         else:
+#             voice_client = await channel.connect()
+#             self.voice_channels[channel.id] = voice_client
+
+#         await ctx.send(f"Connected to voice channel {channel.name}.")
+
+#     @commands.command(name="leave")
+#     async def leave_voice_channel(self, ctx):
+#         if ctx.voice_client is None:
+#             await ctx.send("I am not connected to a voice channel.")
+#             return
+
+#         voice_state = ctx.author.voice
+#         channel = voice_state.channel
+
+#         if ctx.voice_client.channel != channel:
+#             await ctx.send("I am not connected to the same voice channel as you.")
+#             return
+
+#         await ctx.voice_client.disconnect()
+#         del self.voice_channels[channel.id]
+#         await ctx.send(f"Disconnected from voice channel {channel.name}.")
+
+#     @commands.command(name="createvc")
+#     async def create_voice_channel(self, ctx, channel_name: str):
+#         guild = ctx.guild
+#         overwrites = {
+#             guild.default_role: discord.PermissionOverwrite(connect=False),
+#             guild.me: discord.PermissionOverwrite(connect=True)
+#         }
+
+#         category = discord.utils.get(guild.categories, name="Temporary Channels")
+#         if category is None:
+#             category = await guild.create_category("Temporary Channels")
+
+#         channel = await category.create_voice_channel(name=channel_name, overwrites=overwrites, user_limit=1)
+
+#         await ctx.send(f"Created temporary voice channel {channel.name}.")
+
+#         def check(channel, before, after):
+#             return before.channel is None and after.channel == channel
+
+#         try:
+#             voice_channel = await self.bot.wait_for("voice_state_update", timeout=10, check=check)
+#         except asyncio.TimeoutError:
+#             await channel.delete()
+#             await ctx.send("The temporary voice channel was deleted due to inactivity.")
+#         else:
+#             self.voice_channels[channel.id] = voice_channel.channel
+#             await ctx.send(f"Connected to temporary voice channel {channel_name}.")
+
+#     @commands.Cog.listener()
+#     async def on_voice_state_update(self, member, before, after):
+#         if before.channel is not None and before.channel.id in self.voice_channels:
+#             channel = before.channel
+
+#             if len(channel.members) == 0:
+#                 await channel.delete()
+#                 del self.voice_channels[channel.id]
+#                 print(f"Deleted empty temporary voice channel {channel.name}.")
+
+#     @commands.command(name="play")
+#     async def play_music(self, ctx, *, query):
+#         if ctx.voice_client is None:
+#             await ctx.send("I am not connected to a voice channel.")
+#             return
+
+#         voice_state = ctx.author.voice
+#         channel = voice_state.channel
+
+#         if ctx.voice_client.channel != channel:
+#             await ctx.send("I am not connected to the same voice channel as you.")
+#             return
+
+#         ydl_opts = {
+#             "format": "bestaudio/best",
+#             "quiet": True,
+#             "extractaudio": True,
+#             "audioformat": "mp3",
+#             "outtmpl": "%(id)s.%(ext)s",
+#             "default_search": "auto",
+#             "extract_flat": True,
+#             "source_address": "0.0.0.0",
+#             "postprocessors": [{
+#                 "key": "FFmpegExtractAudio",
+#                 "preferredcodec": "mp3",
+#                 "preferredquality": "192"
+#             }],
+#             "ignoreerrors": True,
+#             "simulate": True,
+#             "forceurl": True,
+#             "--no-check-certificate0": True
+#         }
+
+#         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+#             try:
+#                 info = ydl.extract_info(query, download=False)
+#             except yt_dlp.DownloadError:
+#                 await ctx.send("Sorry, I could not find that song.")
+#                 return
+            
+#         url = info["url"]
+#         title = info["title"]
+        
+#         print(f"INI URL -> {url}")
+
+#         async with ctx.typing():
+#             player = discord.FFmpegPCMAudio(url)
+#             ctx.voice_client.play(player, after=lambda e: print(f"Player error: {e}") if e else None)
+
+#         await ctx.send(f"Now playing: {title}")
+
+#     @commands.command(name="stop")
+#     async def stop_music(self, ctx):
+#         if ctx.voice_client is None:
+#             await ctx.send("I am not connected to a voice channel.")
+#             return
+
+#         voice_state = ctx.author.voice
+#         channel = voice_state.channel
+
+#         if ctx.voice_client.channel != channel:
+#             await ctx.send("I am not connected to the same voice channel as you.")
+#             return
+
+#         ctx.voice_client.stop()
+#         await ctx.send("Music stopped.")
+                
+# async def setup(bot: commands.Bot):
+#     await bot.add_cog(Voice(bot, "https://radioonline.co.id/"))
