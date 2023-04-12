@@ -8,9 +8,6 @@ Simple bots, made for general use, code using discord.py
 ```bash
 git clone (this repo)
 ```
-```py
-pip install -r requirements.txt
-```
 
 run main.py, before that put discord bot **TOKEN** at data/config.json
 
